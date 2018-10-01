@@ -1,0 +1,19 @@
+version: '3'
+
+services:
+  php:
+    build: ./docker/php
+    links:
+      - redis
+    volumes:
+      - .:/var/www/html
+    ports:
+      - 80:80
+    working_dir: /var/www/html
+
+  redis:
+    image: 'bitnami/redis:latest'
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+    ports:
+      - '6379:6379'
