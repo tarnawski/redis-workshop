@@ -12,7 +12,7 @@ services:
     working_dir: /var/www/html
 
   redis:
-    image: redis:latest
+    build: ./docker/redis
     environment:
       - ALLOW_EMPTY_PASSWORD=yes
     ports:
