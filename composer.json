@@ -1,0 +1,27 @@
+{
+    "name": "root/redis-workshop",
+    "authors": [
+        {
+            "name": "Tomasz Tarnawski",
+            "email": "tarnawski27@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "CacheRedis\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "CacheRedis\\Tests\\": "tests/"
+        }
+    },
+    "require": {
+        "php": "^7.1",
+        "psr/cache": "^1.0",
+        "predis/predis": "^1.1"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^7.4"
+    }
+}
