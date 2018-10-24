@@ -1,0 +1,22 @@
+{
+    "name": "php/redis",
+    "type": "project",
+    "license": "MIT",
+    "require": {
+        "php": "^7.2",
+        "predis/predis": "^1.1",
+        "psr/cache": "^1.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^7.4"
+    },
+    "autoload": {
+        "psr-4": {"App\\PhpRedisCache\\": "src/"}
+    },
+    "autoload-dev": {
+        "psr-4": {"App\\PhpRedisCache\\Tests\\": "tests/"}
+    },
+    "config": {
+        "bin-dir": "bin"
+    }
+}

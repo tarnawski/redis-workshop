@@ -6,7 +6,7 @@ services:
     links:
       - redis
     volumes:
-      - .:/var/www/html
+      - ./php-redis-cache:/var/www/html
     ports:
       - 80:80
     working_dir: /var/www/html
