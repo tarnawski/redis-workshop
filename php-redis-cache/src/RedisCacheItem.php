@@ -2,8 +2,8 @@
 
 namespace App\PhpRedisCache;
 
-use Psr\Cache\CacheItemInterface;
 use App\PhpRedisCache\Exception\InvalidArgumentException;
+use Psr\Cache\CacheItemInterface;
 
 class RedisCacheItem implements CacheItemInterface
 {
@@ -176,7 +176,7 @@ class RedisCacheItem implements CacheItemInterface
         }
 
         if (is_int($time)) {
-            $this->expiration = (new \DateTime())->modify((sprintf('+%s days', $time)));
+            $this->expiration = (new \DateTime())->modify((sprintf('+%s seconds', $time)));
 
             return $this;
         }

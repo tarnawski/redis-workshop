@@ -19,5 +19,8 @@
         <testsuite name="Redis Cache Functional Test Suite">
             <directory>./tests/functional/</directory>
         </testsuite>
+        <testsuite name="Redis Cache Integration Test Suite">
+            <directory>./tests/integration/</directory>
+        </testsuite>
     </testsuites>
 </phpunit>

@@ -2,10 +2,10 @@
 
 namespace App\PhpRedisCache;
 
+use App\PhpRedisCache\Exception\InvalidArgumentException;
 use Predis\Client;
 use Psr\Cache\CacheItemInterface;
 use Psr\Cache\CacheItemPoolInterface;
-use App\PhpRedisCache\Exception\InvalidArgumentException;
 
 class RedisCacheItemPool implements CacheItemPoolInterface
 {
@@ -15,9 +15,6 @@ class RedisCacheItemPool implements CacheItemPoolInterface
     /** @var CacheItemInterface[] */
     private $queue;
 
-    /**
-     * @param Client $client
-     */
     public function __construct(Client $client)
     {
         $this->client = $client;
@@ -74,9 +71,13 @@ class RedisCacheItemPool implements CacheItemPoolInterface
      */
     public function getItems(array $keys = []): array
     {
-        return array_map(function ($key) {
-            return $this->getItem($key);
-        }, $keys);
+        $items = [];
+
+        foreach ($keys as $key) {
+            $items[$key] = $this->getItem($key);
+        }
+
+        return $items;
     }
 
     /**
@@ -102,6 +103,10 @@ class RedisCacheItemPool implements CacheItemPoolInterface
             throw new InvalidArgumentException(gettype($key), ['string']);
         }
 
+        if (array_key_exists($key, $this->queue)) {
+            return true;
+        }
+
         return (bool)$this->client->exists($key);
     }
 
@@ -113,6 +118,7 @@ class RedisCacheItemPool implements CacheItemPoolInterface
      */
     public function clear(): bool
     {
+        $this->queue = [];
         $this->client->flushdb();
 
         return $this->client->dbsize() === 0;
@@ -178,7 +184,29 @@ class RedisCacheItemPool implements CacheItemPoolInterface
      */
     public function save(CacheItemInterface $item): bool
     {
-        return $this->client->set($item->getKey(), $item->get()) === 'OK';
+        $getExpiration = \Closure::bind(
+            function (CacheItemInterface $item) {
+                return $item->expiration;
+            },
+            null,
+            $item
+        );
+
+        $expiration = $getExpiration($item);
+
+        if (!$expiration) {
+            return (string)$this->client->set($item->getKey(), $item->get()) === 'OK';
+        }
+
+        $ttl = $expiration->getTimestamp() - (new \DateTime())->getTimestamp();
+
+        if ($ttl < 0) {
+            $this->client->del([$item->getKey()]);
+
+            return false;
+        }
+
+        return (string)$this->client->set($item->getKey(), $item->get(), 'EX', $ttl) === 'OK';
     }
 
     /**
